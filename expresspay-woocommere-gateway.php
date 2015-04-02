@@ -7,8 +7,6 @@
   Version: 1.0
   Author: Delu Akin
   Author URI: https://www.facebook.com/deluakin
-  License:           GPL-2.0+
-  License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 add_action('plugins_loaded', 'woocommerce_expresspay_init', 0);
@@ -76,7 +74,7 @@ function woocommerce_expresspay_init() {
                     'title' => __('Description:', 'mrova'),
                     'type' => 'textarea',
                     'description' => __('This controls the description which the user sees during checkout.', 'mrova'),
-                    'default' => __('Pay securely by Credit or Debit card ExpressPay Secure Servers.', 'mrova')),
+                    'default' => __('Integrate visa ghana, visa card, master card and mobile money payment into your Woocommerce site.', 'mrova')),
                 'merchant_id' => array(
                     'title' => __('Merchant ID', 'mrova'),
                     'type' => 'text',
@@ -291,6 +289,16 @@ function woocommerce_expresspay_init() {
         $methods[] = 'WC_Expresspay';
         return $methods;
     }
+
+    // Add settings link on plugin page
+    function woocommer_add_expresspay_settings_link($links) {
+        $settings_link = '<a href="admin.php?page=wc-settings&tab=checkout&section=wc_expresspay">Settings</a>';
+        array_unshift($links, $settings_link);
+        return $links;
+    }
+
+    $plugin = plugin_basename(__FILE__);
+    add_filter("plugin_action_links_$plugin", 'woocommer_add_expresspay_settings_link');
 
     add_filter('woocommerce_payment_gateways', 'woocommerce_add_expresspay_gateway');
 }
