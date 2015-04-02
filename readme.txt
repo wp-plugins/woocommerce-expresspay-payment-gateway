@@ -44,7 +44,7 @@ This plugin is meant to be used by merchants in Ghana.
 
 If you have suggestions or a new feature request, feel free to get in touch with me via email elnino.akin@gmail.com
 
-You can also add me on Facebook (http://facebook.com/deluakin)**
+You can also add me on Facebook **(http://facebook.com/deluakin)**
 
 
 = Contribute =
