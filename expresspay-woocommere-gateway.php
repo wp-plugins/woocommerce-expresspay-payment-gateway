@@ -116,6 +116,8 @@ function woocommerce_expresspay_init() {
 
             $str = "$this->merchant_id|$txnid|$order->order_total|$productinfo|$order->billing_first_name|$order->billing_email|||||||||||$this->salt";
             $hash = hash('sha512', $str);
+            
+            WC()->session->set('expresspay_wc_hash_key', $hash);
 
             $expresspay_args = array(
                 'merchant-id' => $this->merchant_id,
@@ -162,6 +164,7 @@ function woocommerce_expresspay_init() {
         }
 
         function process_payment($order_id) {
+            WC()->session->set('expresspay_wc_oder_id', $order_id);
             $order = new WC_Order($order_id);
             return array(
                 'result' => 'success',
@@ -200,11 +203,26 @@ function woocommerce_expresspay_init() {
             $cancel = isset($_REQUEST["cancel"]) ? $_REQUEST["cancel"] : "";
             $token = isset($_REQUEST["token"]) ? $_REQUEST["token"] : "";
             if (isset($_REQUEST["order-id"])) {
-                $order_id_data = explode('_', $_REQUEST['order-id']);
-                $order_id = (int) $order_id_data[0];
-                if ($order_id != '') {
+
+                $wc_order_id = WC()->session->get('expresspay_wc_oder_id');
+                $hash = WC()->session->get('expresspay_wc_hash_key');
+                $order = new WC_Order($wc_order_id);
+
+                if ($wc_order_id != '') {
                     try {
-                        $order = new WC_Order($order_id);
+                        $order_id_data = explode('_', $_REQUEST['order-id']);
+                        $order_id = (int) $order_id_data[0];
+                        if ($wc_order_id <> $order_id) {
+                            $message = "Thank you for shopping with us. 
+                                Howerever, Your transaction session timed out. 
+                                Your Order id is $wc_order_id";
+                            $message_type = "notice";
+                            $order->add_order_note($message);
+
+                            $redirect_url = $order->get_cancel_order_url();
+                            wp_redirect($redirect_url);
+                            exit;
+                        }
                         $data = array(
                             'merchant-id' => $this->merchant_id,
                             'api-key' => $this->salt,
@@ -227,36 +245,64 @@ function woocommerce_expresspay_init() {
                         switch ($result) {
                             case 1:
                                 //transaction was successful
+                                $message = "Thank you for shopping with us. 
+                                Your transaction was succssful, payment was received. 
+                                You order is currently beign processed. 
+                                Your Order id is $order_id";
+                                $message_type = "success";
+
                                 $order->payment_complete();
                                 $order->update_status('completed');
                                 $order->add_order_note('Expresspay payment successful<br/>Unnique Id from Expresspay: ' . $_REQUEST['token']);
                                 $order->add_order_note($this->msg['message']);
                                 $woocommerce->cart->empty_cart();
+                                $redirect_url = $this->get_return_url($order);
                                 break;
                             case 2:
                                 //request declined
-                                $this->msg['class'] = 'woocommerce_error';
-                                $this->msg['message'] = "Thank you for shopping with us. However, the transaction has been declined.";
-                                $order->add_order_note('Transaction Declined');
-                                break;
+                                $message = "Thank you for shopping with us. However, 
+                                    the transaction could not be completed.";
+                                $message_type = "error";
+                                $order->add_order_note('Transaction declined');
+                                $redirect_url = $order->get_cancel_order_url();
                             default:
                                 $result_text = (isset($response_decoded->{'result-text'})) ? $response_decoded->{'result-text'} : "";
                                 if ($cancel == "true") {
                                     //user cancel request
-                                    $this->msg['class'] = 'woocommerce_error';
-                                    $this->msg['message'] = "Thank you for shopping with us. However, you cancelled your transaction.";
+                                    $message = "Thank you for shopping with us. However, you cancelled your transaction.";
+                                    $message_type = "error";
                                     $order->add_order_note('Transaction cancelled by user');
+                                    $redirect_url = $order->get_cancel_order_url();
                                 } else {
                                     //system error
-                                    $this->msg['class'] = 'woocommerce_error';
-                                    $this->msg['message'] = "Thank you for shopping with us. However, the transaction failed.";
+                                    $message = "Thank you for shopping with us. However, the transaction failed.";
+                                    $message_type = "error";
                                     $order->add_order_note('Transaction Failed: ' . $result_text);
+                                    $redirect_url = $order->get_cancel_order_url();
                                 }
                                 break;
                         }
+
+                        $notification_message = array(
+                            'message' => $message,
+                            'message_type' => $message_type
+                        );
+                        if (version_compare(WOOCOMMERCE_VERSION, "2.2") >= 0) {
+                            add_post_meta($wc_order_id, '_expresspay_hash', $hash, true);
+                        }
+                        update_post_meta($wc_order_id, '_expresspay_wc_message', $notification_message);
+
+                        WC()->session->__unset('expresspay_wc_hash_key');
+                        WC()->session->__unset('expresspay_wc_order_id');
+
+                        wp_redirect($redirect_url);
+                        exit;
+                        
                     } catch (Exception $e) {
-                        $this->msg['class'] = 'woocommerce_error';
-                        $this->msg['message'] = "Error.";
+                        $order->add_order_note('Error: ' . $e->getMessage());
+                        $redirect_url = $order->get_cancel_order_url();
+                        wp_redirect($redirect_url);
+                        exit;
                     }
                 }
 
