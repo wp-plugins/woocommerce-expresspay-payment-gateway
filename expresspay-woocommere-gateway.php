@@ -9,6 +9,8 @@
   Author URI: https://www.facebook.com/deluakin
  */
 
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+
 add_action('plugins_loaded', 'woocommerce_expresspay_init', 0);
 
 function woocommerce_expresspay_init() {
