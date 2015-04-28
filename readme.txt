@@ -109,3 +109,10 @@ __*You can select the radio button next to the Expresspay from the list of payme
 
 = 1.0.0 =
 *   First release
+
+
+
+== Upgrade Notice ==
+
+= 1.0.1 =
+* Display appropriate error message when expresspay payment gateway fail to process request.
