@@ -46,6 +46,10 @@ function woocommerce_expresspay_init() {
             $this->msg['message'] = "";
             $this->msg['class'] = "";
 
+			if (isset($_REQUEST["exp-pay-notice"])) {
+                wc_add_notice($_REQUEST["exp-pay-notice"], "error");
+            }
+			
             if (isset($_REQUEST["order-id"]) && $_REQUEST["order-id"] <> "") {
                 $this->check_expresspay_response();
             }
@@ -152,14 +156,27 @@ function woocommerce_expresspay_init() {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $response = curl_exec($ch);
             $response_decoded = json_decode($response);
-            print_r($response_decoded);
             $status = $response_decoded->status;
             $token = $response_decoded->token;
 
             if ($status == 1) {
                 return $this->checkouturl . $token;
             } else {
-                return false;
+				$error_message = "";
+				if ($status == 2){
+					$error_message = "Invalid credentials or credentials not set in the settings page.";
+				}else if ($status == 3){
+					$error_message = "Your request is invalid";
+				}else{
+					$error_message = "Invalid IP, kindly contact info@expresspaygh.com to get your IP verified.";
+				}
+				global $woocommerce;
+                $url = $woocommerce->cart->get_checkout_url();
+                if (strstr($url, "?")) {
+                    return $url . "&exp-pay-notice=" . $error_message;
+                } else {
+                    return $url . "?exp-pay-notice=" . $error_message;
+                }
             }
         }
 

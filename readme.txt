@@ -3,7 +3,7 @@ Contributors: elnino.akin
 Tags: woocommerce, payment gateway, payment, mastercard, visa cards, master card, mobilemoney, mobile money, mtn, airtel, ghana, mtn mobile money, airtel mobile money
 Requires at least: 3.0.1
 Tested up to: 4.1.1
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,11 @@ This plugin is meant to be used by merchants in Ghana.
 
 If you have suggestions or a new feature request, feel free to get in touch with me via email elnino.akin@gmail.com
 
-You can also add me on Facebook **(http://facebook.com/deluakin)**
+You can also add me on Facebook (http://facebook.com/deluakin)**
+
+
+= Contribute =
+To contribute to this plugin feel free to fork it on GitHub [Interswitch Webpay Woocommerce Payment Gateway on GitHub](https://github.com/tubiz/interswitch-webpay-woocommerce-payment-gateway)
 
 
 == Installation ==
