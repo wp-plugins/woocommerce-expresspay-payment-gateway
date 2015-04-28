@@ -4,7 +4,7 @@
   Plugin Name: Woocommerce Expresspay Payment Plugin
   Plugin URI: http://txtghana.com
   Description: Integrate visa ghana, visa card, master card and mobile money payment into your Woocommerce site
-  Version: 1.0
+  Version: 1.0.1
   Author: Delu Akin
   Author URI: https://www.facebook.com/deluakin
  */
