@@ -9,6 +9,8 @@
   Author URI: https://www.facebook.com/deluakin
  */
 
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+
 add_action('plugins_loaded', 'woocommerce_expresspay_init', 0);
 
 function woocommerce_expresspay_init() {
@@ -327,41 +329,37 @@ function woocommerce_expresspay_init() {
                 wp_redirect($redirect_url);
             }
         }
+		
+		static function add_expresspay_ghs_currency($currencies) {
+			$currencies['GHS'] = __('Ghana Cedi', 'woocommerce');
+			return $currencies;
+		}
+		
+		static function add_expresspay_ghs_currency_symbol($currency_symbol, $currency) {
+			switch ($currency) {
+				case 'GHS': $currency_symbol = 'GHS ';
+					break;
+			}
+			return $currency_symbol;
+		}
+		
+		static function woocommerce_add_expresspay_gateway($methods) {
+			$methods[] = 'WC_Expresspay';
+			return $methods;
+		}
 
+		static function woocommerce_add_expresspay_settings_link($links) {
+			$settings_link = '<a href="admin.php?page=wc-settings&tab=checkout&section=wc_expresspay">Settings</a>';
+			array_unshift($links, $settings_link);
+			return $links;
+		}
     }
 
-    add_filter('woocommerce_currencies', 'add_my_currency');
-
-    function add_my_currency($currencies) {
-        $currencies['GHS'] = __('Ghana Cedi', 'woocommerce');
-        return $currencies;
-    }
-
-    add_filter('woocommerce_currency_symbol', 'add_my_currency_symbol', 10, 2);
-
-    function add_my_currency_symbol($currency_symbol, $currency) {
-        switch (
-        $currency) {
-            case 'GHS': $currency_symbol = 'GHS ';
-                break;
-        }
-        return $currency_symbol;
-    }
-
-    function woocommerce_add_expresspay_gateway($methods) {
-        $methods[] = 'WC_Expresspay';
-        return $methods;
-    }
-
-    // Add settings link on plugin page
-    function woocommer_add_expresspay_settings_link($links) {
-        $settings_link = '<a href="admin.php?page=wc-settings&tab=checkout&section=wc_expresspay">Settings</a>';
-        array_unshift($links, $settings_link);
-        return $links;
-    }
-
-    $plugin = plugin_basename(__FILE__);
-    add_filter("plugin_action_links_$plugin", 'woocommer_add_expresspay_settings_link');
-
-    add_filter('woocommerce_payment_gateways', 'woocommerce_add_expresspay_gateway');
+	$plugin = plugin_basename(__FILE__);
+	
+	add_filter('woocommerce_currencies', array( 'WC_Expresspay', 'add_expresspay_ghs_currency' ) );
+	add_filter('woocommerce_currency_symbol', array( 'WC_Expresspay', 'add_expresspay_ghs_currency_symbol' ), 10, 2);
+    
+    add_filter("plugin_action_links_$plugin", array( 'WC_Expresspay', 'woocommerce_add_expresspay_settings_link' ));
+    add_filter('woocommerce_payment_gateways', array( 'WC_Expresspay', 'woocommerce_add_expresspay_gateway' ));
 }
