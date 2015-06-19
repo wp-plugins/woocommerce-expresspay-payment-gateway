@@ -48,10 +48,6 @@ If you have suggestions or a new feature request, feel free to get in touch with
 You can also add me on Facebook (http://facebook.com/deluakin)**
 
 
-= Contribute =
-To contribute to this plugin feel free to fork it on GitHub [Interswitch Webpay Woocommerce Payment Gateway on GitHub](https://github.com/tubiz/interswitch-webpay-woocommerce-payment-gateway)
-
-
 == Installation ==
 
 = Automatic Installation =
