@@ -118,5 +118,5 @@ __*You can select the radio button next to the Expresspay from the list of payme
 
 == Upgrade Notice ==
 
-= 2.0.0 =
-*   Added SMS functionality. Configure SMS notification to be sent after successful payment.
+= 1.0.1 =
+* Display appropriate error message when expresspay payment gateway fail to process request.
