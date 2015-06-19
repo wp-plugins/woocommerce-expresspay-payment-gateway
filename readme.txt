@@ -3,7 +3,7 @@ Contributors: elnino.akin
 Tags: woocommerce, payment gateway, payment, mastercard, visa cards, master card, mobilemoney, mobile money, mtn, airtel, ghana, mtn mobile money, airtel mobile money
 Requires at least: 3.0.1
 Tested up to: 4.2.1
-Stable tag: 1.0.1
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,9 @@ __*You can select the radio button next to the Expresspay from the list of payme
 
 
 == Changelog ==
+
+= 2.0.0 =
+*   Added SMS functionality. Configure SMS notification to be sent after successful payment.
 
 = 1.0.1 =
 *   Display appropriate error message when expresspay payment gateway fail to process request.
